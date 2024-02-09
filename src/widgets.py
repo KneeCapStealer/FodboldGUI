@@ -1,5 +1,6 @@
 from customtkinter import *
 from typing import Literal
+from tkinter import ttk
 
 
 class Button:
@@ -98,8 +99,8 @@ class Label:
                 for key, val in Label._label_themes[theme].items():
                     label_opts[key] = val
 
-            if theme in Label._label_themes.keys():
-                for key, val in Label._label_themes[theme].items():
+            if theme in Label._grid_themes.keys():
+                for key, val in Label._grid_themes[theme].items():
                     grid_opts[key] = val
 
         if button_args is not None:
@@ -113,3 +114,11 @@ class Label:
         label = CTkLabel(root, **label_opts)
         label.grid(**grid_opts)
         return label
+
+
+def repopulate_people_list(treeview: ttk.Treeview, people: dict[str, int]):
+    treeview.delete(*treeview.get_children())
+
+    for name, money in people.items():
+        value = f"{str(money)[:-2] if money >= 100 else '0'},{str(money)[-2:]} kr"
+        treeview.insert("", "end", text=name, values=(value,))

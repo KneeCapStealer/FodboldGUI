@@ -1,5 +1,5 @@
 # FodboldGUI
 
 ## Todo
-[] todolist
-[x] thing
+-[x] Create main window
+-[ ] 
