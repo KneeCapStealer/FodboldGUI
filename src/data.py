@@ -1,47 +1,63 @@
 import pickle as pk
 from math import *
+from customtkinter import *
 
 
-_individual: dict[str, int] = {}
-_changes: list[str] = []
-_total: int = 0
-_target: int = 1000
+class Data:
+    _individuals: dict[str, int]
+    _changes: list[str]
+    _total: int
+    _total_str: StringVar
+    _target: int
+    _target_str: StringVar
 
-_autosave: bool = False
+    _autosave: bool
+
+    @staticmethod
+    def init():
+        Data._individuals = {}
+        Data._changes = []
+
+        Data._total = 0
+        Data._target = 10000
+
+        Data._total_str = StringVar()
+        Data._total_str = StringVar()
+
+    @staticmethod
+    def get_total() -> int:
+        return Data._total
+
+    @staticmethod
+    def get_total_str() -> StringVar:
+        return Data._total_str
+
+    @staticmethod
+    def get_target_str() -> StringVar:
+        return Data._total_str
+
+    @staticmethod
+    def update_values():
+        Data._total = sum(Data._individuals.values())
 
 
-def get_total() -> int:
-    return _total
+    @staticmethod
+    def save() -> None:
+        pass
 
+    @staticmethod
+    def toggle_autosave(mode: bool = None) -> bool:
+        if mode is not None:
+            _autosave = mode
+            return mode
 
-def get_total_str() -> str:
-    string_total = str(_total)
-    integer = string_total[:-2]
-    decimal = string_total[-2:]
+        Data._autosave = not Data._autosave
+        return Data._autosave
 
-    if integer == "":
-        integer = "0"
+    @staticmethod
+    def exit_app() -> None:
+        if not Data._autosave:
+            exit()
 
-    return integer + ',' + decimal
-
-
-def save() -> None:
-    pass
-
-
-def toggle_autosave(mode: bool = None) -> bool:
-    global _autosave
-    if mode is not None:
-        _autosave = mode
-        return mode
-
-    _autosave = not _autosave
-    return _autosave
-
-
-def exit_app() -> None:
-    if not _autosave:
+        Data.save()
         exit()
-
-    save()
-    exit()

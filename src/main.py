@@ -1,18 +1,27 @@
 from customtkinter import *
 import tkinter as tk
+from tkinter import ttk
+
 
 from windows import *
-import data
+from data import Data
+from widgets import Button, Label
 
 size = 854, 480
+padding = {"padx": 5, "pady": 5}
 
 if __name__ == '__main__':
     root = CTk()
+
+    Button.default("grid", padx=5, pady=5)
+    Button.new_theme("grid", "left", sticky="w")
+
+    Data.init()
     root.geometry(f"{size[0]}x{size[1]}")
 
     # [    ] [            ] [    ]
     root.columnconfigure(1, weight=1)
-    root.columnconfigure(2, weight=5000)
+    root.columnconfigure(2, weight=2)
     root.columnconfigure(3, weight=1)
 
     # ----------------------------------
@@ -20,24 +29,22 @@ if __name__ == '__main__':
     # ----------------------------------
 
     # Settings Button
-    CTkButton(root, text="Settings", command=create_settings_window)\
-        .grid(row=1, column=1, padx=5, pady=5, sticky="w")
+    Button.create(root, {"text": "Settings", "command": create_settings_window},
+                  {"row": 1, "column": 1}, "left")
     # Save Button
-    CTkButton(root, text="Save", command=data.save)\
-        .grid(row=2, column=1, padx=5, pady=5, sticky="w")
+    Button.create(root, {"text": "Save", "command": Data.save},
+                  {"row": 2, "column": 1}, "left")
     # Exit Button
-    CTkButton(root, text="Exit", command=data.exit_app)\
-        .grid(row=3, column=1, padx=5, pady=5, sticky="w")
+    Button.create(root, {"text": "Exit", "command": Data.exit_app},
+                  {"row": 3, "column": 1}, "left")
 
     # ----------------------------------
     # ------------- Labels -------------
     # ----------------------------------
 
     # Total paid
-    CTkLabel(root, text=data.get_total_str() + " DKK")\
-        .grid(row=1, column=2, padx=5, pady=5)
+    Label.create(root, {"textvariable": Data.get_total_str()})
 
-    CTkLabel(root).grid(row=1, column=3, padx=5, pady=5)
-
+    CTkLabel(root).grid(row=1, column=3, **padding)
 
     root.mainloop()
