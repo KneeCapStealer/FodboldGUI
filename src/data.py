@@ -4,6 +4,10 @@ from customtkinter import *
 
 
 class Data:
+    _pkData: dict[str, any]
+    _pickler: pk.Pickler
+    _unpickler: pk.Unpickler
+
     _individuals: dict[str, int]
     _sort_reversed: bool
 
@@ -18,81 +22,71 @@ class Data:
 
     _autosave: bool
 
-    @staticmethod
-    def init():
-        Data._individuals = {"Name Nameson": 200,
+    def __init__(self):
+        self._individuals = {"Name Nameson": 200,
                              "Jone Joneson": 300,
                              "Bone Bonerson": 10}
-        Data._sort_reversed = False
-        Data._changes = []
 
-        Data._total = 0
-        Data._target = 10000
+        self._sort_reversed = False
+        self._changes = []
 
-        Data._total_str = StringVar()
-        Data._target_str = StringVar()
-        Data._difference_str = StringVar()
+        self._total = 0
+        self._target = 10000
 
-        Data._autosave = False
+        self._total_str = StringVar()
+        self._target_str = StringVar()
+        self._difference_str = StringVar()
 
-        Data.sort_individuals()
-        Data.update_values()
+        self._autosave = False
 
-    @staticmethod
-    def get_total() -> int:
-        return Data._total
+        self.sort_individuals()
+        self.update_values()
 
-    @staticmethod
-    def get_total_str() -> StringVar:
-        return Data._total_str
+    def get_total(self) -> int:
+        return self._total
 
-    @staticmethod
-    def get_target_str() -> StringVar:
-        return Data._target_str
+    def get_total_str(self) -> StringVar:
+        return self._total_str
 
-    @staticmethod
-    def get_difference_str() -> StringVar:
-        return Data._difference_str
+    def get_target_str(self) -> StringVar:
+        return self._target_str
 
-    @staticmethod
-    def get_individuals() -> dict:
-        return Data._individuals.copy()
+    def get_difference_str(self) -> StringVar:
+        return self._difference_str
 
-    @staticmethod
-    def sort_individuals() -> dict:
-        Data._individuals = dict(sorted(Data._individuals.items(), key=lambda x: x[1], reverse=Data._sort_reversed))
-        Data._sort_reversed = not Data._sort_reversed
-        return Data._individuals
+    def get_individuals(self) -> dict:
+        return self._individuals.copy()
 
-    @staticmethod
-    def update_values():
-        Data._total = sum(Data._individuals.values())
-        total_str = str(Data._total)
-        target_str = str(Data._target)
-        difference = Data._target - Data._total
+    def sort_individuals(self) -> dict:
+        self._individuals = dict(sorted(self._individuals.items(), key=lambda x: x[1], reverse=self._sort_reversed))
+        self._sort_reversed = not self._sort_reversed
+        return self._individuals
+
+    def update_values(self):
+        self._total = sum(self._individuals.values())
+        total_str = str(self._total)
+        target_str = str(self._target)
+        difference = self._target - self._total
         difference_str = str(difference)
 
-        Data._total_str.set(f"{total_str[:-2] if Data._total > 1 else '0'},{total_str[-2:]} DKK")
-        Data._target_str.set(f"{target_str[:-2] if Data._target > 1 else '0'},{target_str[-2:]} DKK")
-        Data._difference_str.set(f"{difference_str[:-2] if difference > 1 else '0'},{difference_str[-2:]} DKK")
+        self._total_str.set(f"{total_str[:-2] if self._total > 1 else '0'},{total_str[-2:]} DKK")
+        self._target_str.set(f"{target_str[:-2] if self._target > 1 else '0'},{target_str[-2:]} DKK")
+        self._difference_str.set(f"{difference_str[:-2] if difference > 1 else '0'},{difference_str[-2:]} DKK")
 
-    @staticmethod
-    def save() -> None:
+    def save(self) -> None:
         pass
 
-    @staticmethod
-    def toggle_autosave(mode: bool = None) -> bool:
+    def toggle_autosave(self, mode: bool = None) -> bool:
         if mode is not None:
-            Data._autosave = mode
+            self._autosave = mode
             return mode
 
-        Data._autosave = not Data._autosave
-        return Data._autosave
+        self._autosave = not self._autosave
+        return self._autosave
 
-    @staticmethod
-    def exit() -> None:
-        if not Data._autosave:
+    def exit(self) -> None:
+        if not self._autosave:
             exit()
 
-        Data.save()
+        self.save()
         exit()
