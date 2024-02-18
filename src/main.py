@@ -14,7 +14,7 @@ button_font = ("Arial", 20)
 
 if __name__ == '__main__':
     root = CTk()
-    Data.init()
+    data = Data()
 
     # region Setup
     Button.default("button", width=256, height=64, font=button_font)
@@ -39,8 +39,10 @@ if __name__ == '__main__':
     # ----------------------------------
     style = ttk.Style()
     style.theme_use("clam")
-    style.configure("Treeview.Heading", background="#232323", foreground="white", borderwidth=0, font=("", 15))
-    style.configure("Treeview", fieldbackground="#2c2c2c", background="#2c2c2c", foreground="white", font=("", 13))
+    style.configure("Treeview.Heading", background="#232323",
+                    foreground="white", borderwidth=0, font=("", 15))
+    style.configure("Treeview", fieldbackground="#2c2c2c",
+                    background="#2c2c2c", foreground="white", font=("", 13))
 
     tree = ttk.Treeview(root, columns="DKK")
     tree.grid(row=1, column=3, rowspan=3, **padding)
@@ -51,7 +53,7 @@ if __name__ == '__main__':
     tree.column("#0", anchor="c")
     tree.column("DKK", anchor="c")
 
-    repopulate_people_list(tree, Data.get_individuals())
+    repopulate_people_list(tree, data.get_individuals())
 
     # endregion
 
@@ -64,10 +66,10 @@ if __name__ == '__main__':
     Button.create(root, {"text": "Settings", "command": create_settings_window},
                   {"row": 1, "column": 1}, "left")
     # Save Button
-    Button.create(root, {"text": "Save", "command": Data.save},
+    Button.create(root, {"text": "Save", "command": data.save},
                   {"row": 2, "column": 1}, "left")
     # Exit Button
-    Button.create(root, {"text": "Exit", "command": Data.exit},
+    Button.create(root, {"text": "Exit", "command": data.exit},
                   {"row": 3, "column": 1}, "left")
 
     # Pay Button
@@ -80,7 +82,9 @@ if __name__ == '__main__':
     Button.create(root, {"text": "Remove Member", "command": None},
                   {"row": 6, "column": 2})
     # Sort Button
-    Button.create(root, {"text": "Sort", "command": lambda: repopulate_people_list(tree, Data.sort_individuals())},
+    Button.create(root, {
+        "text": "Sort",
+        "command": lambda: repopulate_people_list(tree, data.sort_individuals())},
                   {"row": 4, "column": 3})
 
     # endregion
@@ -91,13 +95,13 @@ if __name__ == '__main__':
     # ----------------------------------
 
     # Total paid
-    Label.create(root, {"textvariable": Data.get_total_str()},
+    Label.create(root, {"textvariable": data.total_str},
                  {"row": 1, "column": 2}, "money")
     # Missing money
-    Label.create(root, {"textvariable": Data.get_difference_str()},
+    Label.create(root, {"textvariable": data.difference_str},
                  {"row": 2, "column": 2}, "money")
     # Target money
-    Label.create(root, {"textvariable": Data.get_target_str()},
+    Label.create(root, {"textvariable": data.target_str},
                  {"row": 3, "column": 2}, "money")
     # endregion
 
