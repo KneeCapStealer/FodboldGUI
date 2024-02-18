@@ -12,6 +12,22 @@ size = 854, 480
 padding = {"padx": 5, "pady": 5}
 button_font = ("Arial", 20)
 
+tree: ttk.Treeview
+
+
+def sort_button():
+    data.sort_individuals()
+    repopulate_people_list(tree, data.get_individuals())
+
+
+def add_member_button():
+    def func(name: str):
+        data.add_member(name)
+        repopulate_people_list(tree, data.get_individuals())
+
+    create_new_member_window(func)
+
+
 if __name__ == '__main__':
     root = CTk()
     data = Data()
@@ -34,9 +50,6 @@ if __name__ == '__main__':
     # endregion
 
     # region People List
-    # ----------------------------------
-    # ---------- People List -----------
-    # ----------------------------------
     style = ttk.Style()
     style.theme_use("clam")
     style.configure("Treeview.Heading", background="#232323",
@@ -58,9 +71,6 @@ if __name__ == '__main__':
     # endregion
 
     # region Buttons
-    # ----------------------------------
-    # ------------- Buttons ------------
-    # ----------------------------------
 
     # Settings Button
     Button.create(root, {"text": "Settings", "command": create_settings_window},
@@ -68,23 +78,26 @@ if __name__ == '__main__':
     # Save Button
     Button.create(root, {"text": "Save", "command": data.save},
                   {"row": 2, "column": 1}, "left")
+
     # Exit Button
-    Button.create(root, {"text": "Exit", "command": data.exit},
+    def exit_root():
+        root.quit()
+        root.destroy()
+
+    Button.create(root, {"text": "Exit", "command": exit_root},
                   {"row": 3, "column": 1}, "left")
 
     # Pay Button
     Button.create(root, {"text": "Make Payment", "command": None},
                   {"row": 4, "column": 2})
     # Add Member Button
-    Button.create(root, {"text": "Add Member", "command": None},
+    Button.create(root, {"text": "Add Member", "command": add_member_button},
                   {"row": 5, "column": 2})
     # Remove Member Button
     Button.create(root, {"text": "Remove Member", "command": None},
                   {"row": 6, "column": 2})
     # Sort Button
-    Button.create(root, {
-        "text": "Sort",
-        "command": lambda: repopulate_people_list(tree, data.sort_individuals())},
+    Button.create(root, {"text": "Sort", "command": sort_button},
                   {"row": 4, "column": 3})
 
     # endregion

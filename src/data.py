@@ -3,6 +3,8 @@ from math import *
 from customtkinter import *
 import os
 
+from windows import create_error_window
+
 GLOBAL_SETTINGS_FILE = "data/settings.pk"
 
 
@@ -31,6 +33,7 @@ class Data:
         self.total_str = StringVar()
         self.target_str = StringVar()
         self.difference_str = StringVar()
+        self._changes = []
 
         if os.path.isfile(GLOBAL_SETTINGS_FILE):
             self._pkSettings = pk.load(open(GLOBAL_SETTINGS_FILE, "rb"))
@@ -46,7 +49,8 @@ class Data:
 
         if os.path.isfile(f"data/{self._datafile_name}"):
             self._pkData = pk.load(open(f"data/{self._datafile_name}", "rb"))
-            self._pickler = pk.Pickler(open(f"data/{self._datafile_name}", "wb"),
+            self._datafile = open(f"data/{self._datafile_name}", "wb+")
+            self._pickler = pk.Pickler(self._datafile,
                                        protocol=pk.HIGHEST_PROTOCOL)
 
             self._sort_reversed = self._pkData["sort_reversed"]
@@ -62,8 +66,7 @@ class Data:
             self._autosave = False
 
             self._individuals = {}
-            self._total = 0
-            self._target = 10000
+            self._target = 4650 * 100
 
             self._pkData = {"sort_reversed": self._sort_reversed,
                             "autosave": self._autosave,
@@ -73,12 +76,12 @@ class Data:
             self.update_values()
             self._pkData["total"] = self._total
 
-            self._pickler = pk.Pickler(open(f"data/{self._datafile_name}", "wb"),
+            self._datafile = open(f"data/{self._datafile_name}", "wb+")
+            self._pickler = pk.Pickler(self._datafile,
                                        protocol=pk.HIGHEST_PROTOCOL)
 
         self.sort_individuals()
 
-        self._changes = []
         self.save()
 
     def get_total(self) -> int:
@@ -87,10 +90,9 @@ class Data:
     def get_individuals(self) -> dict:
         return self._individuals.copy()
 
-    def sort_individuals(self) -> dict:
+    def sort_individuals(self) -> None:
         self._individuals = dict(sorted(self._individuals.items(), key=lambda x: x[1], reverse=self._sort_reversed))
         self._sort_reversed = not self._sort_reversed
-        return self._individuals
 
     def update_values(self):
         self._total = sum(self._individuals.values())
@@ -103,7 +105,20 @@ class Data:
         self.target_str.set(f"{target_str[:-2] if self._target > 1 else '0'},{target_str[-2:]} DKK")
         self.difference_str.set(f"{difference_str[:-2] if difference > 1 else '0'},{difference_str[-2:]} DKK")
 
+    def add_member(self, name: str):
+        if name in self._individuals.keys():
+            create_error_window("Name already exists")
+            return
+
+        self._individuals[name] = 0
+        self.update_values()
+
     def save(self) -> None:
+        self._pkData["individuals"] = self._individuals
+        self._pkData["total"] = self._total
+        self._pkData["target"] = self._target
+        self._pkData["autosave"] = self._autosave
+
         self._pickler.dump(self._pkData)
 
     def toggle_autosave(self, mode: bool = None) -> bool:
@@ -114,9 +129,11 @@ class Data:
         self._autosave = not self._autosave
         return self._autosave
 
-    def exit(self) -> None:
-        if not self._autosave:
-            exit()
+    def __del__(self) -> None:
+        print("Looking at names")
+        names = pk.load(self._datafile)["individuals"].keys()
+        for name in names:
+            print(name)
 
-        self.save()
-        exit()
+        if self._autosave:
+            self.save()
