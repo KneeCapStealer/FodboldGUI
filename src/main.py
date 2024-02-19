@@ -44,10 +44,9 @@ def make_payment_button():
                           tree.item(tree.focus())["text"])
 
 
-
 def update_values_loop():
     data.update_values()
-    root.after(10, update_values_loop)
+    root.after(25, update_values_loop)
 
 
 if __name__ == '__main__':
