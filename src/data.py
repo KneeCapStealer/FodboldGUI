@@ -11,7 +11,6 @@ GLOBAL_SETTINGS_FILE = "data/settings.pk"
 class Data:
     _pkSettings: dict[str, any]
     _pkData: dict[str, any]
-    _pickler: pk.Pickler
 
     _datafile_name: str
 
@@ -43,15 +42,12 @@ class Data:
             self._datafile_name = "data.pk"
             self._pkSettings = {"datafile": self._datafile_name}
 
-            settings_file = open(GLOBAL_SETTINGS_FILE, "wb")
-            pk.dump(self._pkSettings, file=settings_file,
-                    protocol=pk.HIGHEST_PROTOCOL)
+            with open(GLOBAL_SETTINGS_FILE, "wb") as settings_file:
+                pk.dump(self._pkSettings, file=settings_file,
+                        protocol=pk.HIGHEST_PROTOCOL)
 
         if os.path.isfile(f"data/{self._datafile_name}"):
             self._pkData = pk.load(open(f"data/{self._datafile_name}", "rb"))
-            self._datafile = open(f"data/{self._datafile_name}", "wb+")
-            self._pickler = pk.Pickler(self._datafile,
-                                       protocol=pk.HIGHEST_PROTOCOL)
 
             self._sort_reversed = self._pkData["sort_reversed"]
             self._autosave = self._pkData["autosave"]
@@ -74,11 +70,6 @@ class Data:
                             "target": self._target}
 
             self.update_values()
-            self._pkData["total"] = self._total
-
-            self._datafile = open(f"data/{self._datafile_name}", "wb+")
-            self._pickler = pk.Pickler(self._datafile,
-                                       protocol=pk.HIGHEST_PROTOCOL)
 
         self.sort_individuals()
 
@@ -115,11 +106,14 @@ class Data:
 
     def save(self) -> None:
         self._pkData["individuals"] = self._individuals
-        self._pkData["total"] = self._total
         self._pkData["target"] = self._target
         self._pkData["autosave"] = self._autosave
 
-        self._pickler.dump(self._pkData)
+        pk.dump(self._pkData, open(f"data/{self._datafile_name}", "wb"), pk.HIGHEST_PROTOCOL)
+
+        names = pk.load(open(f"data/{self._datafile_name}", "rb"))["individuals"].keys()
+        for name in names:
+            print(name)
 
     def toggle_autosave(self, mode: bool = None) -> bool:
         if mode is not None:
@@ -130,10 +124,5 @@ class Data:
         return self._autosave
 
     def __del__(self) -> None:
-        print("Looking at names")
-        names = pk.load(self._datafile)["individuals"].keys()
-        for name in names:
-            print(name)
-
         if self._autosave:
             self.save()
