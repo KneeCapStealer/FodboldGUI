@@ -42,9 +42,8 @@ class Data:
             self._datafile_name = "data.pk"
             self._pkSettings = {"datafile": self._datafile_name}
 
-            with open(GLOBAL_SETTINGS_FILE, "wb") as settings_file:
-                pk.dump(self._pkSettings, file=settings_file,
-                        protocol=pk.HIGHEST_PROTOCOL)
+            pk.dump(self._pkSettings, open(GLOBAL_SETTINGS_FILE, "wb"),
+                    protocol=pk.HIGHEST_PROTOCOL)
 
         if os.path.isfile(f"data/{self._datafile_name}"):
             self._pkData = pk.load(open(f"data/{self._datafile_name}", "rb"))

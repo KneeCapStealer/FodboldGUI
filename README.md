@@ -5,8 +5,9 @@
 - [x] Finish main window layout
 - [x] Sorting people list
 - [ ] Import CLI fodboldtur code
-  - [ ] Saving
-  - [ ] Loading
-  - [ ] Adding & Removing members
-  - [x] Registering Payment
+  - [x] Saving
+  - [x] Loading
+  - [x] Adding members
+  - [ ] Removing members
+  - [ ] Registering Payment
 - [ ] Create working settings menu
