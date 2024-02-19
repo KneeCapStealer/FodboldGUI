@@ -3,7 +3,6 @@ import tkinter as tk
 from tkinter import ttk
 import math
 
-
 from windows import *
 from data import Data
 from widgets import *
@@ -13,6 +12,8 @@ padding = {"padx": 5, "pady": 5}
 button_font = ("Arial", 20)
 
 tree: ttk.Treeview
+root: CTk
+data: Data
 
 
 def sort_button():
@@ -21,11 +22,32 @@ def sort_button():
 
 
 def add_member_button():
-    def func(name: str):
-        data.add_member(name)
+    def func(name: str) -> bool:
+        if not data.add_member(name):
+            return False
+
         repopulate_people_list(tree, data.get_individuals())
+        return True
 
     create_new_member_window(func)
+
+
+def make_payment_button():
+    def func(name: str, payment: int) -> bool:
+        if not data.register_payment(name, payment):
+            return False
+
+        repopulate_people_list(tree, data.get_individuals())
+        return True
+
+    create_payment_window(func, list(data.get_individuals().keys()),
+                          tree.item(tree.focus())["text"])
+
+
+
+def update_values_loop():
+    data.update_values()
+    root.after(10, update_values_loop)
 
 
 if __name__ == '__main__':
@@ -79,16 +101,19 @@ if __name__ == '__main__':
     Button.create(root, {"text": "Save", "command": data.save},
                   {"row": 2, "column": 1}, "left")
 
+
     # Exit Button
     def exit_root():
         root.quit()
         root.destroy()
 
+
     Button.create(root, {"text": "Exit", "command": exit_root},
                   {"row": 3, "column": 1}, "left")
 
     # Pay Button
-    Button.create(root, {"text": "Make Payment", "command": None},
+    Button.create(root,
+                  {"text": "Make Payment", "command": make_payment_button},
                   {"row": 4, "column": 2})
     # Add Member Button
     Button.create(root, {"text": "Add Member", "command": add_member_button},
@@ -118,4 +143,5 @@ if __name__ == '__main__':
                  {"row": 3, "column": 2}, "money")
     # endregion
 
+    update_values_loop()
     root.mainloop()

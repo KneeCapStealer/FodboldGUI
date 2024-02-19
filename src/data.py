@@ -3,8 +3,6 @@ from math import *
 from customtkinter import *
 import os
 
-from windows import create_error_window
-
 GLOBAL_SETTINGS_FILE = "data/settings.pk"
 
 
@@ -53,7 +51,6 @@ class Data:
 
             self._individuals = self._pkData["individuals"]
             self._target = self._pkData["target"]
-            self.update_values()
 
         else:
             # Init data file
@@ -67,8 +64,6 @@ class Data:
                             "autosave": self._autosave,
                             "individuals": self._individuals,
                             "target": self._target}
-
-            self.update_values()
 
         self.sort_individuals()
 
@@ -95,13 +90,26 @@ class Data:
         self.target_str.set(f"{target_str[:-2] if self._target > 1 else '0'},{target_str[-2:]} DKK")
         self.difference_str.set(f"{difference_str[:-2] if difference > 1 else '0'},{difference_str[-2:]} DKK")
 
-    def add_member(self, name: str):
+    def add_member(self, name: str) -> bool:
         if name in self._individuals.keys():
-            create_error_window("Name already exists")
-            return
+            return False
 
         self._individuals[name] = 0
-        self.update_values()
+        return True
+
+    def remove_member(self, name: str) -> bool:
+        if name not in self._individuals.keys():
+            return False
+
+        del self._individuals[name]
+        return True
+
+    def register_payment(self, name: str, payment: int) -> bool:
+        if name not in self._individuals.keys():
+            return False
+
+        self._individuals[name] += payment
+        return True
 
     def save(self) -> None:
         self._pkData["individuals"] = self._individuals
@@ -109,10 +117,6 @@ class Data:
         self._pkData["autosave"] = self._autosave
 
         pk.dump(self._pkData, open(f"data/{self._datafile_name}", "wb"), pk.HIGHEST_PROTOCOL)
-
-        names = pk.load(open(f"data/{self._datafile_name}", "rb"))["individuals"].keys()
-        for name in names:
-            print(name)
 
     def toggle_autosave(self, mode: bool = None) -> bool:
         if mode is not None:
