@@ -3,6 +3,8 @@ from widgets import *
 from collections.abc import Callable
 from CTkMessagebox import CTkMessagebox as MsgBox
 
+from data import Data
+
 padding = {"padx": 10, "pady": 10}
 
 
@@ -16,9 +18,25 @@ def create_top_window(size: tuple[int, int] = (854, 480),
     return win
 
 
-def create_settings_window() -> CTkToplevel:
+def create_settings_window(data: Data) -> CTkToplevel:
     win = create_top_window(title="Settings")
-    CTkLabel(win, text="Bruda").pack()
+
+    autosave_switch: CTkSwitch
+    datafile_entry: CTkEntry
+
+    def autosave_func():
+        data.toggle_autosave(bool(autosave_switch.get()))
+
+    autosave_switch = CTkSwitch(win, text="Autosave", command=autosave_func)
+    autosave_switch.pack(side=LEFT, **padding)
+
+    datafile_entry = CTkEntry(win, placeholder_text=data.get_datafile())
+    datafile_entry.pack(side=LEFT, **padding)
+
+    def load_datafile():
+        data.change_datafile(datafile_entry.get())
+
+    CTkButton(win, text="Load", command=load_datafile).pack(side=LEFT, **padding)
 
     return win
 

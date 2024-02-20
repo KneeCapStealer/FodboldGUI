@@ -130,7 +130,10 @@ if __name__ == '__main__':
     # region Buttons
 
     # Settings Button
-    Button.create(root, {"text": "Settings", "command": create_settings_window},
+    def settings_button():
+        create_settings_window(data)
+
+    Button.create(root, {"text": "Settings", "command": settings_button},
                   {"row": 1, "column": 1}, "left")
     # Save Button
     Button.create(root, {"text": "Save", "command": data.save},

@@ -112,12 +112,32 @@ class Data:
         self._individuals[name] += payment
         return True
 
+    def get_datafile(self) -> str:
+        return self._datafile_name
+
+    def change_datafile(self, filename: str) -> None:
+        self._datafile_name = filename
+        self._pkSettings["datafile"] = filename
+
+        self._load()
+        pk.dump(self._pkSettings, open(GLOBAL_SETTINGS_FILE, "wb"), pk.HIGHEST_PROTOCOL)
+
+
     def save(self) -> None:
         self._pkData["individuals"] = self._individuals
         self._pkData["target"] = self._target
         self._pkData["autosave"] = self._autosave
 
         pk.dump(self._pkData, open(f"data/{self._datafile_name}", "wb"), pk.HIGHEST_PROTOCOL)
+
+    def _load(self) -> None:
+        if self._autosave:
+            self.save()
+
+        self._pkData = pk.load(open(f"data/{self._datafile_name}", "rb"))
+        self._individuals = self._pkData["individuals"]
+        self._target = self._pkData["target"]
+        self._autosave = self._pkData["autosave"]
 
     def toggle_autosave(self, mode: bool = None) -> bool:
         if mode is not None:
