@@ -58,7 +58,7 @@ class Data:
             self._autosave = False
 
             self._individuals = {}
-            self._target = 4650 * 100
+            self._target = 4500 * 100
 
             self._pkData = {"sort_reversed": self._sort_reversed,
                             "autosave": self._autosave,
@@ -66,6 +66,7 @@ class Data:
                             "target": self._target}
 
         self.sort_individuals()
+        self.update_values()
 
         self.save()
 

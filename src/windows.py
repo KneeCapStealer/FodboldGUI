@@ -100,7 +100,7 @@ def create_payment_window(confirm_command: Callable[[str, int], bool],
 
     def confirm_func() -> None:
         decimal_marker = None
-        payment_string = payment_amount.get()
+        payment_string = payment_amount.get().strip()
         if "," in payment_string:
             decimal_marker = ","
         elif "." in payment_string:
@@ -108,6 +108,7 @@ def create_payment_window(confirm_command: Callable[[str, int], bool],
 
         multiplier: int = 100
         if decimal_marker is not None:
+            multiplier = 1
             decimal_count: int = len(payment_string.split(decimal_marker, 1)[1])
             if decimal_count > 2:
                 err = MsgBox(win, title="Incorrect number", icon="warning",
@@ -125,8 +126,7 @@ def create_payment_window(confirm_command: Callable[[str, int], bool],
 
                 return
 
-            payment_string = payment_amount.get()[:-3] + payment_amount.get()[-2:]
-            multiplier = 1
+            payment_string = payment_string[:-3] + payment_string[-2:]
 
         if not payment_string.isdigit():
             err = MsgBox(win, title="Incorrect number", icon="warning",

@@ -2,6 +2,8 @@ from customtkinter import *
 import tkinter as tk
 from tkinter import ttk
 import math
+from CTkMessagebox import CTkMessagebox as MsgBox
+
 
 from windows import *
 from data import Data
@@ -27,6 +29,7 @@ def add_member_button():
             return False
 
         repopulate_people_list(tree, data.get_individuals())
+        data.update_values()
         return True
 
     create_new_member_window(func)
@@ -38,15 +41,18 @@ def make_payment_button():
             return False
 
         repopulate_people_list(tree, data.get_individuals())
+        data.update_values()
         return True
 
-    create_payment_window(func, list(data.get_individuals().keys()),
+    names = list(data.get_individuals().keys())
+    if len(names) == 0:
+        MsgBox(root, 333, 222, "Payment Error",
+               "There are no members added to this save",
+               icon="cancel", sound=True)
+        return
+
+    create_payment_window(func, names,
                           tree.item(tree.focus())["text"])
-
-
-def update_values_loop():
-    data.update_values()
-    root.after(25, update_values_loop)
 
 
 if __name__ == '__main__':
@@ -100,19 +106,12 @@ if __name__ == '__main__':
     Button.create(root, {"text": "Save", "command": data.save},
                   {"row": 2, "column": 1}, "left")
 
-
     # Exit Button
-    def exit_root():
-        root.quit()
-        root.destroy()
-
-
-    Button.create(root, {"text": "Exit", "command": exit_root},
+    Button.create(root, {"text": "Exit", "command": exit},
                   {"row": 3, "column": 1}, "left")
 
     # Pay Button
-    Button.create(root,
-                  {"text": "Make Payment", "command": make_payment_button},
+    Button.create(root, {"text": "Make Payment", "command": make_payment_button},
                   {"row": 4, "column": 2})
     # Add Member Button
     Button.create(root, {"text": "Add Member", "command": add_member_button},
@@ -142,5 +141,4 @@ if __name__ == '__main__':
                  {"row": 3, "column": 2}, "money")
     # endregion
 
-    update_values_loop()
     root.mainloop()
