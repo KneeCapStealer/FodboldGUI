@@ -51,8 +51,38 @@ def make_payment_button():
                icon="cancel", sound=True)
         return
 
-    create_payment_window(func, names,
-                          tree.item(tree.focus())["text"])
+    tree_select_name = tree.item(tree.focus())["text"]
+    create_payment_window(func, names, tree_select_name)
+
+
+def remove_member_button():
+    selected_name = tree.item(tree.focus())["text"]
+    if selected_name == "":
+        MsgBox(root, 333, 222, "Member Error",
+               "You have not selected a member.\n"
+               "Please select a member first.",
+               icon="cancel", sound=True)
+
+        return
+
+    first_name = selected_name.split(" ", 1)[0]
+    confirm = MsgBox(root, 360, 230, "Do you want to remove this member?",
+                     f"Are you sure you want to remove {selected_name} from the participants?\n\n"
+                     f"All of {selected_name}'s payments will be removed as well.",
+                     icon="question", sound=False,
+                     option_1=f"Remove {first_name}", option_2="Cancel")
+
+    if confirm.get() == "Cancel":
+        return
+
+    if not data.remove_member(selected_name):
+        MsgBox(root, 333, 222, "How?!",
+               "The member you have selected doesn't exist.\n"
+               "Just.. How did you manage to do that?",
+               icon="cancel", sound=True)
+
+    repopulate_people_list(tree, data.get_individuals())
+    data.update_values()
 
 
 if __name__ == '__main__':
@@ -117,7 +147,7 @@ if __name__ == '__main__':
     Button.create(root, {"text": "Add Member", "command": add_member_button},
                   {"row": 5, "column": 2})
     # Remove Member Button
-    Button.create(root, {"text": "Remove Member", "command": None},
+    Button.create(root, {"text": "Remove Member", "command": remove_member_button},
                   {"row": 6, "column": 2})
     # Sort Button
     Button.create(root, {"text": "Sort", "command": sort_button},
