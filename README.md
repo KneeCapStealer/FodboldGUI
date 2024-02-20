@@ -9,5 +9,5 @@
   - [x] Loading
   - [x] Adding members
   - [ ] Removing members
-  - [ ] Registering Payment
+  - [x] Registering Payment
 - [ ] Create working settings menu
